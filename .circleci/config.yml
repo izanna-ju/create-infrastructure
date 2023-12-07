@@ -34,4 +34,5 @@ workflows:
   infrastructure-workflow:
     jobs:
       - create-infrastructure
-      - configure-infrastructure
+      - configure-infrastructure:
+          requires: [create-infrastructure]
