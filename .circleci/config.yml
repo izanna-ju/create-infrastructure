@@ -1,37 +1,23 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
-jobs:
-  # create-infrastructure:
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Create cloudformation stack
-  #         command: |
-  #           aws cloudformation deploy \
-  #           --template-file infra-template.yml \
-  #           --stack-name infra-${CIRCLE_WORKFLOW_ID:0:5} \
-  #           --region us-east-1
+# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
+# See: https://circleci.com/docs/orb-intro/
+orbs:
+  # See the Node orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
+  node: circleci/node@5.2
 
-  configure-infrastructure:
-    docker:
-      - image: python:3.10-alpine3.16
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["c9:de:64:07:e4:d0:c5:cf:d1:e1:3e:1e:4d:c4:57:5a"]
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible 
-      - run:
-          name: configure server
-          command: |
-            ansible-playbook -i inventory.txt main-remote.yml
-
+# Orchestrate jobs using workflows
+# See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  infrastructure-workflow:
+  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+    # Inside the workflow, you define the jobs you want to run.
     jobs:
-      # - create-infrastructure
-      - configure-infrastructure
+      - node/test:
+          # This is the node version to use for the `cimg/node` tag
+          # Relevant tags can be found on the CircleCI Developer Hub
+          # https://circleci.com/developer/images/image/cimg/node
+          version: '16.10'
+          # If you are using yarn, change the line below from "npm" to "yarn"
+          pkg-manager: npm
